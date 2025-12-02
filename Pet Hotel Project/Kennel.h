@@ -2,36 +2,41 @@
 #include <string>
 #include <vector>
 
-class Animal;  // forward declaration
+class Animal;
 
 class Kennel
 {
 private:
     int id;
-    std::string size;     // "small", "medium", "large", "rodent"
+    std::string size;      // "large", "medium", "small", "rodent"
+    std::string type;      // "dog", "cat", "rodent"
     int capacity;
-    std::string type;     // "dog", "cat", "rodent"
     std::vector<Animal*> animals;
 
 public:
     // Constructor / Destructor
-    Kennel(int id = 0, std::string size = "", int capacity = 1, std::string type = "");
+    Kennel(int id = 0, std::string size = "", std::string type = "", int capacity = 1);
     ~Kennel();
 
     // Getters
     int getId() const;
     std::string getSize() const;
-    int getCapacity() const;
     std::string getType() const;
+    int getCapacity() const;
     std::vector<Animal*> getAnimals() const;
 
     // Setters
     void setId(int newId);
-    void setSize(const std::string newSize);
-    void setCapacity(int newCap);
-    void setType(const std::string newType);
-    void setAnimals(const std::vector<Animal*> newAnimals);
+    void setSize(std::string newSize);
+    void setType(std::string newType);
+    void setCapacity(int newCapacity);
+    void setAnimals(std::vector<Animal*> newAnimals);
 
-    // Controller helper
-    void addAnimal(Animal* a);
+    // Logic
+    int getCurrentCount() const;
+    bool isFull() const;
+    bool isEmpty() const;
+    bool canAccept(Animal* a) const;
+    bool addAnimal(Animal* a);
+    bool removeAnimal(Animal* a);
 };
