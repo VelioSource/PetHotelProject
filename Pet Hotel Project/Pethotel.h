@@ -36,4 +36,9 @@ public:
 
     // Controller
     void addReservation(Reservation* r);
+    Reservation* findReservationById(int id);
+    bool removeReservation(Reservation* r);
+    std::vector<Kennel*> findAvailableKennelsFor(Animal* a);
+    void addAnimal(Animal* a);
+
 };

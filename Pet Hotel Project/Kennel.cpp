@@ -1,36 +1,115 @@
 #include "Kennel.h"
-#include "Animal.h"
+#include "Dog.h"
+#include "Cat.h"
+#include "Rodent.h"
 
-// Constructor
-Kennel::Kennel(int id, std::string size, int capacity, std::string type)
+Kennel::Kennel(int id, std::string size, std::string type, int capacity)
 {
     this->id = id;
     this->size = size;
-    this->capacity = capacity;
     this->type = type;
+    this->capacity = capacity;
 }
 
-// Destructor
 Kennel::~Kennel()
 {
 }
 
-// ---------- Getters ----------
 int Kennel::getId() const { return id; }
 std::string Kennel::getSize() const { return size; }
-int Kennel::getCapacity() const { return capacity; }
 std::string Kennel::getType() const { return type; }
+int Kennel::getCapacity() const { return capacity; }
 std::vector<Animal*> Kennel::getAnimals() const { return animals; }
 
-// ---------- Setters ----------
 void Kennel::setId(int newId) { id = newId; }
-void Kennel::setSize(const std::string newSize) { size = newSize; }
-void Kennel::setCapacity(int newCap) { capacity = newCap; }
-void Kennel::setType(const std::string newType) { type = newType; }
-void Kennel::setAnimals(const std::vector<Animal*> newAnimals) { animals = newAnimals; }
+void Kennel::setSize(std::string newSize) { size = newSize; }
+void Kennel::setType(std::string newType) { type = newType; }
+void Kennel::setCapacity(int newCapacity) { capacity = newCapacity; }
+void Kennel::setAnimals(std::vector<Animal*> newAnimals) { animals = newAnimals; }
 
-// ---------- Helper ----------
-void Kennel::addAnimal(Animal* a)
+int Kennel::getCurrentCount() const
 {
-    animals.push_back(a);
+    return animals.size();
+}
+
+bool Kennel::isFull() const
+{
+    return getCurrentCount() >= capacity;
+}
+
+bool Kennel::isEmpty() const
+{
+    return animals.empty();
+}
+
+bool Kennel::canAccept(Animal* a) const
+{
+    if (a == NULL) return false;
+
+    // Rodent logic
+    Rodent* r = dynamic_cast<Rodent*>(a);
+    if (type == "rodent")
+    {
+        if (r == NULL) return false;       // only rodents allowed
+        if (isFull()) return false;        // max 4
+
+        if (!animals.empty())
+        {
+            Rodent* existing = dynamic_cast<Rodent*>(animals[0]);
+            if (existing == NULL) return false;
+            // must match rodent type
+            if (existing->getType() != r->getType())
+                return false;
+        }
+        return true;
+    }
+
+    // Dog logic
+    Dog* d = dynamic_cast<Dog*>(a);
+    if (type == "dog")
+    {
+        if (d == NULL) return false;
+
+        int w = d->getWeight();
+
+        if (size == "large" && w > 25) return !isFull();
+        if (size == "medium" && w >= 10 && w <= 25) return !isFull();
+        if (size == "small" && w < 10) return !isFull();
+
+        return false;
+    }
+
+    // Cat logic
+    Cat* c = dynamic_cast<Cat*>(a);
+    if (c != NULL)
+    {
+        // cats can go into any small kennel
+        if (size == "small") return !isFull();
+    }
+
+
+    return false;
+}
+
+bool Kennel::addAnimal(Animal* a)
+{
+    if (canAccept(a))
+    {
+        animals.push_back(a);
+        return true;
+    }
+    return false;
+}
+
+bool Kennel::removeAnimal(Animal* a)
+{
+    for (int i = 0; i < animals.size(); i++)
+    {
+        if (animals[i] == a)
+        {
+            animals.erase(animals.begin() + i);
+            return true;
+        }
+    }
+    return false;
 }
